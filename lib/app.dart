@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
+
 import 'package:go_router/go_router.dart';
 
-import 'core/theme/app_theme.dart';
+
 import 'features/home/ui/home_page.dart';
 import 'features/auth/ui/login_page.dart';
 import 'features/auth/ui/register_page.dart';
@@ -32,5 +32,5 @@ final GoRouter _router = GoRouter(
   ],
 );
 
-// Esporta il router per essere usato da main.dart
+/// Espone il router usato da MyApp
 GoRouter get appRouter => _router;
