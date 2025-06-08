@@ -1,0 +1,24 @@
+workflows:
+  ios-build:
+    name: iOS Dev Build (Codemagic automatic signing)
+    instance_type: mac_mini
+    max_build_duration: 60
+    environment:
+      flutter: stable
+      xcode: latest
+      vars:
+        BUNDLE_ID: "com.andreapizzola.thegiftlist"
+    scripts:
+      - name: Flutter clean & pub get
+        script: |
+          flutter clean
+          flutter pub get
+      - name: Build iOS .ipa
+        script: |
+          flutter build ipa --debug --no-codesign
+    artifacts:
+      - build/ios/ipa/*.ipa
+    signing:
+      ios:
+        distribution_type: development
+        bundle_identifier: "com.andreapizzola.thegiftlist"

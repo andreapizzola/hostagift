@@ -1,4 +1,4 @@
-# hostagift
+# hostagift – The Gift List
 
 A new Flutter project.
 
