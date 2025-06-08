@@ -1,24 +1,29 @@
 workflows:
-  ios-build:
-    name: iOS Dev Build (Codemagic automatic signing)
+  ios-release:
+    name: iOS Release (App Store)
+
+    # macchina e timeout
     instance_type: mac_mini
-    max_build_duration: 60
+    max_build_duration: 30
+
+    # ambiente Flutter/Xcode
     environment:
       flutter: stable
       xcode: latest
       vars:
         BUNDLE_ID: "com.andreapizzola.thegiftlist"
+
+    # tutti i comandi
     scripts:
-      - name: Flutter clean & pub get
+      - name: Clean & get deps
         script: |
           flutter clean
           flutter pub get
-      - name: Build iOS .ipa
+
+      - name: Build signed IPA
         script: |
-          flutter build ipa --debug --no-codesign
+          flutter build ipa --release
+
+    # dove trovare l’output
     artifacts:
       - build/ios/ipa/*.ipa
-    signing:
-      ios:
-        distribution_type: development
-        bundle_identifier: "com.andreapizzola.thegiftlist"
