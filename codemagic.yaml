@@ -2,19 +2,15 @@ workflows:
   ios-release:
     name: iOS Release (App Store)
 
-    # tipo di macchina e timeout massimo
     instance_type: mac_mini
     max_build_duration: 30
 
-    # ambiente Flutter / Xcode
     environment:
       flutter: stable
       xcode: latest
       vars:
         BUNDLE_ID: "com.andreapizzola.thegiftlist"
-        P12_PASSWORD: "Codemagic2025!"
 
-    # script di build
     scripts:
       - name: Clean & get dependencies
         script: |
@@ -24,21 +20,22 @@ workflows:
       - name: Analyze code
         script: flutter analyze
 
-      - name: Build signed IPA
+      - name: Build App Store IPA
         script: |
           flutter build ipa \
             --export-method app-store \
             --build-name 1.0.0 \
             --build-number 1
 
-    # output artifacts
     artifacts:
       - build/ios/ipa/*.ipa
 
-    # configurazione code signing
-    code_signing:
-  ios:
-    distribution_type: app-store
-    certificate_path: ios_distribution.p12
-    certificate_password: $P12_PASSWORD
-    provisioning_profile_path: Hostagift_AppStore_Profile.mobileprovision
+    # Non dichiariamo code_signing qui: 
+    # è già gestito dalla UI→Settings→Code signing.
+
+    publishing:
+      app_store_connect:
+        api_key: $APP_STORE_CONNECT_API_KEY
+        api_issuer: $APP_STORE_CONNECT_API_ISSUER
+        tests: false
+        enabled: true
