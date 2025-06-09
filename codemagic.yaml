@@ -2,18 +2,20 @@ workflows:
   ios-release:
     name: iOS Release (App Store)
 
-    # → Tipo di macchina e timeout
     instance_type: mac_mini
     max_build_duration: 30
 
-    # → Ambiente Flutter / Xcode
     environment:
       flutter: stable
       xcode: latest
+      vars:
+        BUNDLE_ID: "com.andreapizzola.thegiftlist"
+      # <-- inserisci qui il gruppo delle variabili
+      groups:
+        - appstore-connect
 
-    # → Script di build
     scripts:
-      - name: Clean & get deps
+      - name: Clean & get dependencies
         script: |
           flutter clean
           flutter pub get
@@ -28,15 +30,13 @@ workflows:
             --build-name 1.0.0 \
             --build-number 1
 
-    # → Dove trovare l’IPA risultante
     artifacts:
       - build/ios/ipa/*.ipa
 
-    # → Pubblicazione automatica su App Store Connect
     publishing:
       app_store_connect:
-        api_key:        $APP_STORE_CONNECT_API_KEY
-        api_key_id:     $APP_STORE_CONNECT_API_KEY_ID
-        api_issuer:     $APP_STORE_CONNECT_API_ISSUER
-        tests:          false
-        enabled:        true
+        api_key:     $APP_STORE_CONNECT_API_KEY
+        api_key_id:  $APP_STORE_CONNECT_API_KEY_ID
+        api_issuer:  $APP_STORE_CONNECT_API_ISSUER
+        tests:       false
+        enabled:     true
