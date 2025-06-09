@@ -27,10 +27,11 @@ workflows:
     artifacts:
       - build/ios/ipa/*.ipa
 
-    publishing:
+ publishing:
   app_store_connect:
     api_key:        $APP_STORE_CONNECT_API_KEY
     api_key_id:     $APP_STORE_CONNECT_API_KEY_ID
     api_issuer:     $APP_STORE_CONNECT_API_ISSUER
     tests:          false
     enabled:        true
+
