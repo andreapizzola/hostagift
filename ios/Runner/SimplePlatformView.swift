@@ -2,12 +2,12 @@ import Flutter
 import UIKit
 
 class SimplePlatformView: NSObject, FlutterPlatformView {
-  let _view: UIView
+  private let _view: UIView
 
   init(frame: CGRect, viewIdentifier viewId: Int64, arguments args: Any?, binaryMessenger messenger: FlutterBinaryMessenger?) {
-    _view = UIView()
-    _view.backgroundColor = UIColor.blue
+    self._view = UIView(frame: frame)
     super.init()
+    self._view.backgroundColor = UIColor.blue
   }
 
   func view() -> UIView {
