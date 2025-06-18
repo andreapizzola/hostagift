@@ -12,8 +12,9 @@ import Flutter
     // 🔧 FIX: Usa correttamente il registrar e registra la view factory
     let registrar = controller.registrar(forPlugin: "SimplePlatformView")
     let factory = SimplePlatformViewFactory(messenger: controller.binaryMessenger)
-    registrar.register(factory, withId: "simple-platform-view")
-
+if let registrar = controller.registrar(forPlugin: "SimplePlatformView") {
+  registrar.register(factory, withId: "simple-platform-view")
+}
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 }
