@@ -10,7 +10,7 @@ workflows:
       vars:
         BUNDLE_ID: "com.andreapizzola.thegiftlist"
         FLUTTER_BUILD_NAME: "1.0.2"
-        FLUTTER_BUILD_NUMBER: "5"
+        FLUTTER_BUILD_NUMBER: "6"
       groups:
         - appstore-connect
 
