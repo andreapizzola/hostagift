@@ -1,13 +1,12 @@
 workflows:
   ios-release:
     name: iOS Release (App Store)
-
     instance_type: mac_mini
     max_build_duration: 30
 
     environment:
       flutter: stable
-      xcode: latest
+      xcode: 15.3 # <-- usa latest solo se ti serve la versione più recente sempre
       vars:
         BUNDLE_ID: "com.andreapizzola.thegiftlist"
         FLUTTER_BUILD_NAME: "1.0.2"
@@ -21,12 +20,20 @@ workflows:
           flutter clean
           flutter pub get
 
+      - name: Check SimplePlatformView.swift exists
+        script: |
+          if [ ! -f ios/Runner/SimplePlatformView.swift ]; then
+            echo "Missing SimplePlatformView.swift"
+            exit 1
+          fi
+
       - name: Analyze code
         script: flutter analyze
 
       - name: Build App Store IPA
         script: |
           flutter build ipa \
+            --release \
             --export-method app-store \
             --build-name $FLUTTER_BUILD_NAME \
             --build-number $FLUTTER_BUILD_NUMBER
@@ -41,5 +48,3 @@ workflows:
         issuer_id: $APP_STORE_CONNECT_ISSUER_ID
         bundle_id: $BUNDLE_ID
         submit_to_testflight: true
-        # beta_groups:
-        #   - Internal Testers
