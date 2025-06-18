@@ -2,21 +2,19 @@ workflows:
   ios-release:
     name: iOS Release (App Store)
 
-    # macchina e timeout
     instance_type: mac_mini
     max_build_duration: 30
 
-    # flutter / xcode e variabili
     environment:
       flutter: stable
       xcode: latest
       vars:
         BUNDLE_ID: "com.andreapizzola.thegiftlist"
-      # qui importi il gruppo che contiene tutte le 3 variabili App Store Connect
+        FLUTTER_BUILD_NAME: "1.0.2"
+        FLUTTER_BUILD_NUMBER: "4"
       groups:
         - appstore-connect
 
-    # i comandi in sequenza
     scripts:
       - name: Clean & get dependencies
         script: |
@@ -30,18 +28,18 @@ workflows:
         script: |
           flutter build ipa \
             --export-method app-store \
-            --build-name 1.0.0 \
-            --build-number 1
+            --build-name $FLUTTER_BUILD_NAME \
+            --build-number $FLUTTER_BUILD_NUMBER
 
-    # artefatti prodotti
     artifacts:
       - build/ios/ipa/*.ipa
 
-    # pubblicazione su App Store Connect
     publishing:
       app_store_connect:
-        api_key:      $APP_STORE_CONNECT_API_KEY
-        api_key_id:   $APP_STORE_CONNECT_API_KEY_ID
-        api_issuer:   $APP_STORE_CONNECT_API_ISSUER
-        tests:        false
-        enabled:      true
+        api_key: $APP_STORE_CONNECT_PRIVATE_KEY
+        key_id: $APP_STORE_CONNECT_KEY_ID
+        issuer_id: $APP_STORE_CONNECT_ISSUER_ID
+        bundle_id: $BUNDLE_ID
+        submit_to_testflight: true
+        # beta_groups:
+        #   - Internal Testers

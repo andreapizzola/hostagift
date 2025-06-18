@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_to_list_in_spreads
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -49,7 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
           children: [
-            // TESTATA
+            // Header
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -68,124 +70,116 @@ class _HomeScreenState extends State<HomeScreen> {
                     const Text(
                       "SEGUICI",
                       style: TextStyle(fontWeight: FontWeight.w500),
-                    )
+                    ),
                   ],
                 ),
               ],
             ),
             const SizedBox(height: 24),
 
-            // FEED
-            ...products.asMap().entries.map((entry) {
-              int index = entry.key;
-              Map<String, dynamic> product = entry.value;
-              return Container(
-                margin: const EdgeInsets.only(bottom: 24),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Colors.black12,
-                      blurRadius: 12,
-                      offset: Offset(0, 4),
-                    ),
-                  ],
+            // Product list using collection-for
+            for (var entry in products.asMap().entries)
+              _buildProductCard(context, entry.value, entry.key),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProductCard(
+      BuildContext ctx, Map<String, dynamic> product, int index) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 12,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(product['title'], style: Theme.of(ctx).textTheme.headlineSmall),
+            const SizedBox(height: 4),
+            Text(product['subtitle'], style: Theme.of(ctx).textTheme.bodyMedium),
+            const SizedBox(height: 12),
+
+            // Carousel without .toList()
+            CarouselSlider.builder(
+              itemCount: product['images'].length,
+              itemBuilder: (context, imgIndex, realIdx) => ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.network(
+                  product['images'][imgIndex],
+                  width: double.infinity,
+                  height: 300,
+                  fit: BoxFit.cover,
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(product['title'],
-                          style: Theme.of(context).textTheme.headlineSmall),
-                      const SizedBox(height: 4),
-                      Text(product['subtitle'],
-                          style: Theme.of(context).textTheme.bodyMedium),
-                      const SizedBox(height: 12),
+              ),
+              options: CarouselOptions(
+                height: 300,
+                viewportFraction: 1.0,
+                enableInfiniteScroll: true,
+                enlargeCenterPage: false,
+                autoPlay: false,
+                onPageChanged: (page, reason) {
+                  setState(() {
+                    _current[index] = page;
+                  });
+                },
+              ),
+            ),
+            const SizedBox(height: 8),
 
-                      // GALLERIA CAROUSEL CON INDICATORI
-                      Column(
-                        children: [
-                          CarouselSlider(
-                            items: product['images'].map<Widget>((img) {
-                              return ClipRRect(
-                                borderRadius: BorderRadius.circular(12),
-                                child: Image.network(
-                                  img,
-                                  width: double.infinity,
-                                  height: 300,
-                                  fit: BoxFit.cover,
-                                ),
-                              );
-                            }).toList(),
-                            options: CarouselOptions(
-                              height: 300,
-                              viewportFraction: 1.0,
-                              enableInfiniteScroll: true,
-                              enlargeCenterPage: false,
-                              autoPlay: false,
-                              onPageChanged: (page, reason) {
-                                setState(() {
-                                  _current[index] = page;
-                                });
-                              },
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: List.generate(product['images'].length, (dotIndex) {
-                              return Container(
-                                width: 8,
-                                height: 8,
-                                margin: const EdgeInsets.symmetric(horizontal: 4),
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: (_current[index] ?? 0) == dotIndex
-                                      ? Colors.deepPurple
-                                      : Colors.grey.shade300,
-                                ),
-                              );
-                            }),
-                          ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 16),
-                      Text(product['price'],
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          )),
-                      const SizedBox(height: 8),
-                      TextButton(
-                        onPressed: () {
-                          context.push('/product', extra: {
-                            "title": product['title'],
-                            "subtitle": product['subtitle'],
-                            "price": product['price'],
-                            "image": product['images'][0],
-                            "description":
-                                "Questa è una descrizione dettagliata per il prodotto \"${product['title']}\". Include informazioni, benefici e suggerimenti d’uso.",
-                          });
-                        },
-                        style: TextButton.styleFrom(
-                          foregroundColor: Colors.deepPurple,
-                        ),
-                        child: const Text(
-                          "SCOPRI DI PIÙ",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                      ),
-                    ],
+            // Indicators
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(
+                product['images'].length,
+                (dotIndex) => Container(
+                  width: 8,
+                  height: 8,
+                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: (_current[index] ?? 0) == dotIndex
+                        ? Colors.deepPurple
+                        : Colors.grey.shade300,
                   ),
                 ),
-              );
-            }).toList(),
+              ),
+            ),
+
+            const SizedBox(height: 16),
+            Text(
+              product['price'],
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            TextButton(
+              onPressed: () {
+                ctx.push('/product', extra: {
+                  "title": product['title'],
+                  "subtitle": product['subtitle'],
+                  "price": product['price'],
+                  "image": product['images'][0],
+                  "description":
+                      "Descrizione dettagliata per \"${product['title']}\".",
+                });
+              },
+              style: TextButton.styleFrom(foregroundColor: Colors.deepPurple),
+              child: const Text(
+                "SCOPRI DI PIÙ",
+                style: TextStyle(fontWeight: FontWeight.w600, letterSpacing: 0.5),
+              ),
+            ),
           ],
         ),
       ),
